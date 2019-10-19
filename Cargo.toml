@@ -36,6 +36,7 @@ serde_urlencoded = "0.6"
 tokio = { version = "0.2", features = ["blocking", "fs", "macros", "rt-threaded", "stream", "sync", "time"] }
 tower-service = "0.3"
 rustls = { version = "0.16", optional = true }
+tracing-futures = { version = "0.2.0", optional = true }
 # tls is enabled by default, we don't want that yet
 tungstenite = { default-features = false, version = "0.9", optional = true }
 urlencoding = "1.0.0"
@@ -45,6 +46,8 @@ pin-project = "0.4.5"
 pretty_env_logger = "0.3"
 serde_derive = "1.0"
 handlebars = "1.0.0"
+tracing = "0.1.9"
+tracing-subscriber = "0.1.5"
 
 [features]
 default = ["multipart", "websocket"]

@@ -31,6 +31,8 @@ use self::recover::Recover;
 use self::unify::Unify;
 use self::untuple_one::UntupleOne;
 pub(crate) use self::wrap::{Wrap, WrapSealed};
+#[cfg(feature = "tracing-futures")]
+use tracing_futures::{Instrument, Instrumented};
 
 // A crate-private base trait, allowing the actual `filter` method to change
 // signatures without it being a breaking change.
@@ -456,5 +458,22 @@ where
     #[inline]
     fn filter(&self, _: Internal) -> Self::Future {
         Box::pin(route::with(|route| (self.func)(route)).into_future())
+    }
+}
+
+// ===== Tracing =====
+
+#[cfg(feature = "tracing-futures")]
+impl<F> FilterBase for Instrumented<F>
+where
+    F: FilterBase,
+{
+    type Extract = F::Extract;
+    type Error = F::Error;
+    type Future = Instrumented<F::Future>;
+
+    fn filter(&self, internal: Internal) -> Self::Future {
+        let _guard = self.span().enter();
+        self.inner().filter(internal).instrument(self.span().clone())
     }
 }
